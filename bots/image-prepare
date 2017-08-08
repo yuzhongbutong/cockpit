@@ -21,6 +21,7 @@ import errno
 import os
 import sys
 import subprocess
+import tempfile
 
 BOTS = os.path.abspath(os.path.dirname(__file__))
 BASE = os.path.normpath(os.path.join(BOTS, ".."))
@@ -44,6 +45,7 @@ def main():
     parser.add_argument('-B', '--build-only', action='store_true', help='Only build and download results')
     parser.add_argument('-I', '--install-only', action='store_true', help='Only upload and install')
     parser.add_argument('-c', '--containers', action='store_true', help='Install container images')
+    parser.add_argument('--jobs', action='store', default=1, help='Run silly parallel jobs to test loading')
     parser.add_argument('--address', help='Address of already running machine, implies --install-only')
     parser.add_argument('image', nargs='?', default=testvm.DEFAULT_IMAGE, help='The image to use')
     args = parser.parse_args()
@@ -83,9 +85,29 @@ def main():
         sys.stderr.write("image-prepare: unable to download all necessary images\n")
         return 1
 
+
+    # While the machine is booting, make a tarball
+    source = subprocess.check_output([ os.path.join(BOTS, "make-source") ]).strip()
+
+    jobs = int(args.jobs)
+    pids = [ ]
+    for job in range(0, jobs):
+        pid = os.fork()
+        if pid:
+            pids.append(pid)
+        else:
+            break
+    else:
+        status = 0
+        for pid in pids:
+            (pid, code) = os.waitpid(pid, 0)
+            if code & 0xff:
+                status = code & 0xff
+        return status
+
     try:
         if not args.install_only:
-            build_and_install(build_image, results, skips, args)
+            build_and_install(build_image, results, source, skips, args)
         if not args.build_only and build_image != base_image:
             only_install(base_image, results, skips, args, args.address)
     except (RuntimeError, testvm.Failure) as ex:
@@ -104,7 +126,7 @@ def upload_scripts(machine, args):
 def prepare_install_image(base_image):
     if "/" not in base_image:
         base_image = os.path.join(BOTS, "images", base_image)
-    test_images = os.path.join(TEST, "images")
+    test_images = tempfile.mkdtemp(dir=TEST, prefix="images")
     if not os.path.exists(test_images):
         os.makedirs(test_images)
     install_image = os.path.join(test_images, os.path.basename(base_image))
@@ -140,15 +162,13 @@ def run_install_script(machine, do_build, do_install, skips, arg, args):
     if install and args.containers:
         machine.execute("/var/lib/testvm/containers.install")
 
-def build_and_install(build_image, build_results, skips, args):
+def build_and_install(build_image, build_results, source, skips, args):
     """Build and maybe install Cockpit into a test image"""
     build_image = prepare_install_image(build_image)
     machine = testvm.VirtMachine(verbose=args.verbose, image=build_image,
-            memory_mb=4096, cpus=4, maintain=True, networking=networking)
+            memory_mb=4096, cpus=1, maintain=True, networking=networking)
     completed = False
 
-    # While the machine is booting, make a tarball
-    source = subprocess.check_output([ os.path.join(BOTS, "make-source") ]).strip()
     machine.start()
     completed = False
 
@@ -156,7 +176,7 @@ def build_and_install(build_image, build_results, skips, args):
         machine.wait_boot()
         upload_scripts(machine, args=args)
         machine.upload([ source ], "/var/tmp")
-        run_install_script(machine, True, True, skips, os.path.basename(source), args)
+        run_install_script(machine, True, False, skips, os.path.basename(source), args)
         completed = True
     finally:
         if not completed and args.sit:
@@ -210,4 +230,4 @@ def get_build_image(image):
     return image
 
 if __name__ == "__main__":
-    sys.exit(main())
+    os._exit(main())
