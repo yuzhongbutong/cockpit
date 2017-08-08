@@ -123,10 +123,6 @@ class Machine:
     def __init__(self, address="127.0.0.1", image=None, verbose=False, label=None, browser=None):
         self.verbose = verbose
 
-        # Currently all images are x86_64. When that changes we will have
-        # an override file for those images that are not
-        self.arch = "x86_64"
-
         self.image = image or "unknown"
         self.atomic_image = self.image in ATOMIC_IMAGES
         self.ssh_user = "root"
@@ -228,7 +224,7 @@ class Machine:
             time.sleep(1)
         raise Failure("Timed out waiting for /run/nologin to disappear")
 
-    def wait_boot(self, timeout_sec=120):
+    def wait_boot(self, timeout_sec=360):
         """Wait for a machine to boot"""
         start_time = time.time()
         boot_id = None
@@ -241,7 +237,7 @@ class Machine:
             raise Failure("Unable to reach machine {0} via ssh: {1}:{2}".format(self.label, self.ssh_address, self.ssh_port))
         self.boot_id = boot_id
 
-    def wait_reboot(self, timeout_sec=120):
+    def wait_reboot(self, timeout_sec=360):
         self.disconnect()
         assert self.boot_id, "Before using wait_reboot() use wait_boot() successfully"
         boot_id = self.boot_id
@@ -734,6 +730,7 @@ TEST_DOMAIN_XML="""
     <acpi/>
   </features>
   <devices>
+    {emulator}
     <disk type='file' snapshot='external'>
       <driver name='qemu' type='qcow2'/>
       <source file='{drive}'/>
@@ -744,7 +741,7 @@ TEST_DOMAIN_XML="""
     {console}
     <disk type='file' device='cdrom'>
       <source file='{iso}'/>
-      <target dev='hdb' bus='ide'/>
+      <target dev='hdb' bus='scsi'/>
       <readonly/>
     </disk>
   </devices>
@@ -767,6 +764,10 @@ TEST_DISK_XML="""
 
 TEST_KVM_XML="""
   <cpu mode='host-passthrough'/>
+  <vcpu>{cpus}</vcpu>
+"""
+
+TEST_PPC64LE_XML="""
   <vcpu>{cpus}</vcpu>
 """
 
@@ -905,7 +906,11 @@ class VirtMachine(Machine):
 
         # Currently all images are run on x86_64. When that changes we will have
         # an override file for those images that are not
-        self.arch = "x86_64"
+        sys.stderr.write("IMAGE IS: {0}\n".format(image))
+        if "ppc64le" in image:
+            self.arch = "ppc64le"
+        else:
+            self.arch = "x86_64"
 
         self.memory_mb = memory_mb or VirtMachine.memory_mb or MEMORY_MB
         self.cpus = cpus or VirtMachine.cpus or 1
@@ -992,9 +997,16 @@ class VirtMachine(Machine):
             "memory_in_mib": self.memory_mb,
             "drive": image_to_use,
             "iso": os.path.join(LOCAL_DIR, "cloud-init.iso"),
+            "emulator": "",
         }
 
-        if os.path.exists("/dev/kvm"):
+        sys.stderr.write("ARCH IS: {0}\n".format(self.arch))
+        if self.arch == "ppc64le":
+            sys.stderr.write("WARNING: Starting virtual machine with emulation due to non x86_64\n")
+            sys.stderr.write("WARNING: Machine will run about 10-20 times slower\n")
+            keys["emulator"] = "<emulator>/usr/bin/qemu-system-ppc64</emulator>"
+            keys["cpu"] = TEST_PPC64LE_XML.format(**keys)
+        elif os.path.exists("/dev/kvm"):
             keys["type"] = "kvm"
             keys["cpu"] = TEST_KVM_XML.format(**keys)
         else:
@@ -1137,7 +1149,7 @@ class VirtMachine(Machine):
         expect = subprocess.Popen(["expect", "--", "-", str(self._domain.ID())], stdin=subprocess.PIPE)
         expect.communicate(SCRIPT)
 
-    def wait_boot(self, timeout_sec=120):
+    def wait_boot(self, timeout_sec=360):
         """Wait for a machine to boot"""
         try:
             Machine.wait_boot(self, timeout_sec)
@@ -1145,7 +1157,7 @@ class VirtMachine(Machine):
             self._diagnose_no_address()
             raise
 
-    def stop(self, timeout_sec=120):
+    def stop(self, timeout_sec=360):
         if self.maintain:
             self.shutdown(timeout_sec=timeout_sec)
         else:
