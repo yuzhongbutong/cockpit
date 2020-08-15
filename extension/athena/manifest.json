@@ -1,0 +1,11 @@
+{
+    "version": 0,
+
+    "menu": {
+        "athena": {
+            "label": "概况",
+            "path": "athena.html"
+        }
+    },
+    "content-security-policy": "connect-src 'self' *"
+}

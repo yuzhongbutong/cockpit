@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="generator" content="HTML Tidy for HTML5 for Windows version 5.6.0">
+    <title>
+      概况
+    </title>
+    <meta charset="utf-8">
+    <link href="../base1/patternfly.css" type="text/css" rel="stylesheet">
+    <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+    <link href="athena.css" type="text/css" rel="stylesheet">
+    <script src="../base1/jquery.js"></script>
+    <script src="../base1/cockpit.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="panel panel-default athena-panel">
+        <div class="panel-heading">
+          <span>概况</span>
+        </div>
+        <table class="table table-hover athena-table">
+          <tr>
+            <th>
+              资产标签:
+            </th>
+            <td>
+              <div class="text-updatable-parent">
+                <input id="txtAssetTagID"> <button id="btnAssetTagID" type="button" class="btn btn-default">修改</button>
+              </div>
+            </td>
+            <th>
+              运行时间:
+            </th>
+            <td>
+              <span id="spanRuntimeID"></span>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              服务器型号:
+            </th>
+            <td>
+              <span id="spanServerModelID"></span>
+            </td>
+            <th>
+              S/N:
+            </th>
+            <td>
+              <span id="spanSerialNumberID"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="successModalID" class="modal modal-dialog modal-content" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-header">
+          <h4 class="modal-title" translate="yes">
+            错误
+          </h4>
+        </div>
+        <div class="modal-body">
+          <div class="pficon pficon-ok"></div>
+          <div id="successModalTextID"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-dismiss="modal" translate>确定</button>
+        </div>
+      </div>
+    </div>
+      <div id="errorModalID" class="modal modal-dialog modal-content" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-header">
+          <h4 class="modal-title" translate="yes">
+            错误
+          </h4>
+        </div>
+        <div class="modal-body">
+          <div class="pficon pficon-warning-triangle-o"></div>
+          <div id="errorModalTextID"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-dismiss="modal" translate>确定</button>
+        </div>
+      </div>
+    </div>
+    <script src="athena.js"></script>
+  </body>
+</html>

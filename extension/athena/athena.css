@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+div.c1 {
+    display: block;
+}
+
+.athena-panel {
+    margin-top: 20px;
+}
+
+.athena-table {
+    width: 100%;
+}
+
+.athena-table tr {
+    height: 40px;
+}
+
+.athena-table tr > th, .athena-table tr > td {
+    width: 25%;
+    vertical-align: middle !important;
+    padding: 0 8px !important;
+}
+
+.athena-table th:nth-child(odd) {
+    background-color: #efefef;
+    text-align: right;
+}
+
+.text-updatable-parent {
+    display: flex;
+    justify-content: space-between;
+}
+
+.text-updatable-parent>input {
+    width: 0;
+    flex: 1;
+    margin-right: 5px;
+    border: none;
+    border-bottom: 1px solid #c7c7c7;
+}
+
+.modal-dialog .modal-body .pficon {
+    float: left;
+    font-size: 36px;
+    margin-top: 6px;
+    margin-right: 20px;
+}
