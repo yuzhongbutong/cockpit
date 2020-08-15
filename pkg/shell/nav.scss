@@ -344,6 +344,12 @@ $desktop: $phone + 1px;
 
     // Override some PF4isms to make sure the host switcher is 100% tall
     .navbar-pf {
+        .img-logo {
+            width: 100px;
+            display: inline !important;
+            margin: -5px 10px -5px -5px;
+        }
+
         .navbar-header {
             border: none;
         }
