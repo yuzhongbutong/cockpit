@@ -203,7 +203,7 @@ var info = {
         "shell/images/server-error.png",
         "shell/images/server-large.png",
         "shell/images/server-small.png",
-        "shell/images/logo.jpg",
+        "shell/images/logo.png",
         "shell/index.html",
         "shell/shell.html",
 
