@@ -1,5 +1,5 @@
 var host = location.host.split(':')[0] || '9.119.96.191';
-var port = 18001;
+var port = 8001;
 
 var http = cockpit.http({
     address: host,
