@@ -1,9 +1,12 @@
-var host = location.host.split(':')[0] || '9.119.96.191';
+var host = location.host.split(':')[0];
 var port = 8001;
 
 var http = cockpit.http({
     address: host,
-    port: port
+    port: port,
+    tls: {
+        validate: false
+    }
 });
 
 
@@ -44,7 +47,7 @@ function getAssetTag() {
 
 function refreshRuntime() {
     if (!!window.EventSource) {
-        var source = new EventSource('http://' + host + ':' + port + '/running-time', { withCredentials: true });
+        var source = new EventSource(host + ':' + port + '/running-time', { withCredentials: true });
         source.addEventListener('message', function(e) {
             $('#spanRuntimeID').text(e.data);
         });
