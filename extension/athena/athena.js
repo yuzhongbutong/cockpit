@@ -47,7 +47,7 @@ function getAssetTag() {
 
 function refreshRuntime() {
     if (!!window.EventSource) {
-        var source = new EventSource(host + ':' + port + '/running-time', { withCredentials: true });
+        var source = new EventSource('https://' + host + ':' + port + '/running-time', { withCredentials: true });
         source.addEventListener('message', function(e) {
             $('#spanRuntimeID').text(e.data);
         });
