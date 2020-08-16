@@ -6,6 +6,9 @@ var http = cockpit.http({
     port: port,
     tls: {
         validate: false,
+        authority: {
+            file: 'javastack.crt'
+        },
         certificate: {
             data: '-----BEGIN CERTIFICATE-----\nMIICRjCCAa+gAwIBAgIERREpvTANBgkqhkiG9w0BAQsFADBWMQswCQYDVQQGEwJD\nTjELMAkGA1UECBMCTE4xCzAJBgNVBAcTAkRMMRAwDgYDVQQKEwdVbmtub3duMQww\nCgYDVQQLEwNPcmcxDTALBgNVBAMTBEpvZXkwHhcNMjAwODE2MDEyNjI0WhcNMzAw\nODE0MDEyNjI0WjBWMQswCQYDVQQGEwJDTjELMAkGA1UECBMCTE4xCzAJBgNVBAcT\nAkRMMRAwDgYDVQQKEwdVbmtub3duMQwwCgYDVQQLEwNPcmcxDTALBgNVBAMTBEpv\nZXkwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAI3VgYYnk7rXySwNyVKlk9rQ\noCJBjKWkJ01cp1RtmD1vpM85PZbvQPSV5KPDisu//cPqbiv7NK+luZeXaB+/EOHm\nOZQj4c9p8onYrSwmxBGJbwnQgbpdCxfH1co5Ax5TJN3ipiSBSZWWb2S2BwsMqL3R\nZATosdg3TstuGG4jm4N5AgMBAAGjITAfMB0GA1UdDgQWBBRewD+OcYlSAchQGiDD\n2I7qsgwdDDANBgkqhkiG9w0BAQsFAAOBgQAWoWIoIHby/ymxIPLF7zmH/QQoWGn8\n5VntZKWhynbafmurEaqzZPDMpYT54T5haxcjN+X0WG351RqudVCpQHKNJjb34wSV\nYO6zxr8QvuAW8BUIFaCLtMSDVGSjRyY6wiqgFhkrYq6KvOblg7QiJ0m23lhv9Xwc\nSwhc/vBB/FOkRA==\n-----END CERTIFICATE-----'
         },
