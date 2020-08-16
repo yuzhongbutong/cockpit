@@ -75,7 +75,7 @@ function execCommand() {
 }
 
 $(function() {
-    refreshRuntime();
-    getAssetTag();
+    //refreshRuntime();
+    //getAssetTag();
     execCommand();
 });
